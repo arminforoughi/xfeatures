@@ -90,7 +90,7 @@ export default function Home() {
             />
             <div className="flex flex-col">
               <span className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-primary drop-shadow-md">Survival of the Feature</span>
-              <span className="text-base sm:text-lg md:text-2xl font-medium text-muted-foreground mt-1">AI-Powered Frontend Evolution</span>
+
             </div>
           </div>
           <Button
@@ -110,10 +110,10 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-6">
                 <div className="space-y-4">
                   <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-primary drop-shadow-xl">
-                    AI Agent Your Frontend
+                    AI Agents For Your Frontend
                   </h1>
                   <p className="max-w-[600px] text-xl sm:text-2xl text-muted-foreground font-medium">
-                    AI analyzes, improves, and tracks your landing pages—so you can focus on building.
+                    AI analyzes and improves your landing page—so you can focus on building and launching safely.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 mt-4">
