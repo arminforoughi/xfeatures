@@ -5,8 +5,31 @@ import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Github } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import MagnetImage from "../components/ui/MagnetImage";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 interface Repository {
   full_name: string;
@@ -90,8 +113,8 @@ export default function Home() {
       <header className="w-full border-b bg-background">
         <div className="container mx-auto flex h-28 items-center justify-between px-4">
           <div className="flex items-center space-x-6">
-            <Image
-              src="/jellyfish.png"
+            <MagnetImage
+              src="/Adobe Express - file.png"
               alt="Logo"
               width={96}
               height={96}
@@ -191,8 +214,8 @@ export default function Home() {
                 )}
               </div>
               <div className="flex items-center justify-center">
-                <Image
-                  src="/hero.svg"
+                <MagnetImage
+                  src="/logoss.png"
                   width={900}
                   height={900}
                   alt="Survival of the Features"
@@ -306,48 +329,48 @@ export default function Home() {
                     <p className="text-muted-foreground">
                       Our system employs an intelligent agent that follows a sophisticated workflow:
                     </p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>Code Analysis: Deep semantic understanding of your frontend codebase</li>
-                      <li>Pattern Recognition: Identification of improvement opportunities</li>
-                      <li>Optimization Generation: Creation of optimized code variants</li>
-                      <li>Performance Testing: Validation of improvements</li>
-                      <li>Deployment: Seamless integration of changes</li>
+                    <ul className="list-disc list-inside space-y-2 text-purple-900 bg-gradient-to-br from-purple-100 via-purple-50 to-indigo-100 rounded-xl p-6 shadow-sm">
+                      <li className="marker:text-purple-400">Code Analysis: Deep semantic understanding of your frontend codebase</li>
+                      <li className="marker:text-purple-400">Pattern Recognition: Identification of improvement opportunities</li>
+                      <li className="marker:text-purple-400">Optimization Generation: Creation of optimized code variants</li>
+                      <li className="marker:text-purple-400">Performance Testing: Validation of improvements</li>
+                      <li className="marker:text-purple-400">Deployment: Seamless integration of changes</li>
                     </ul>
                   </div>
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <Image
-                      src="/agentic-flow.svg"
+                    <MagnetImage
+                      src="/agenticflow.png"
                       width={400}
                       height={300}
                       alt="Agentic Flow Diagram"
-                      className="object-contain"
+                      className="object-contain rounded-xl"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="rounded-lg border bg-background p-8">
-                <h3 className="text-2xl font-bold mb-4">Analysis Process</h3>
+                <h3 className="text-2xl font-bold mb-4"></h3>
                 <div className="grid md:grid-cols-2 gap-6 items-center">
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <Image
-                      src="/analysis-process.svg"
+                    <MagnetImage
+                      src="/WhatsApp Image 2025-06-04 at 22.30.31.jpeg"
                       width={400}
                       height={300}
                       alt="Analysis Process Diagram"
-                      className="object-contain"
+                      className="object-contain rounded-xl"
                     />
                   </div>
                   <div className="space-y-4">
                     <p className="text-muted-foreground">
                       Our analysis engine examines multiple aspects of your frontend:
                     </p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>Code Structure: Component organization and architecture</li>
-                      <li>Performance Metrics: Load times and resource usage</li>
-                      <li>Accessibility: WCAG compliance and user experience</li>
-                      <li>Best Practices: Modern frontend development standards</li>
-                      <li>Dependencies: Package optimization and updates</li>
+                    <ul className="list-disc list-inside space-y-2 text-purple-900 bg-gradient-to-br from-purple-100 via-purple-50 to-indigo-100 rounded-xl p-6 shadow-sm">
+                      <li className="marker:text-purple-400">Code Structure: Component organization and architecture</li>
+                      <li className="marker:text-purple-400">Performance Metrics: Load times and resource usage</li>
+                      <li className="marker:text-purple-400">Accessibility: WCAG compliance and user experience</li>
+                      <li className="marker:text-purple-400">Best Practices: Modern frontend development standards</li>
+                      <li className="marker:text-purple-400">Dependencies: Package optimization and updates</li>
                     </ul>
                   </div>
                 </div>
@@ -360,49 +383,226 @@ export default function Home() {
                     <p className="text-muted-foreground">
                       Comprehensive tracking system for measuring improvements:
                     </p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>User Engagement: Click-through rates and interaction patterns</li>
-                      <li>Performance Metrics: Load times and resource utilization</li>
-                      <li>A/B Testing: Variant performance comparison</li>
-                      <li>Error Tracking: Real-time monitoring of issues</li>
-                      <li>Conversion Analytics: Impact on business metrics</li>
+                    <ul className="list-disc list-inside space-y-2 text-purple-900 bg-gradient-to-br from-purple-100 via-purple-50 to-indigo-100 rounded-xl p-6 shadow-sm">
+                      <li className="marker:text-purple-400">User Engagement: Click-through rates and interaction patterns</li>
+                      <li className="marker:text-purple-400">Performance Metrics: Load times and resource utilization</li>
+                      <li className="marker:text-purple-400">A/B Testing: Variant performance comparison</li>
+                      <li className="marker:text-purple-400">Error Tracking: Real-time monitoring of issues</li>
+                      <li className="marker:text-purple-400">Conversion Analytics: Impact on business metrics</li>
                     </ul>
                   </div>
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <Image
-                      src="/analytics-dashboard.svg"
+                    <MagnetImage
+                      src="/WhatsApp Image 2025-06-04 at 21.19.43.jpeg"
                       width={400}
                       height={300}
                       alt="Analytics Dashboard Preview"
-                      className="object-contain"
+                      className="object-contain rounded-xl"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="rounded-lg border bg-background p-8">
-                <h3 className="text-2xl font-bold mb-4">Developer Insights</h3>
+                <h3 className="text-2xl font-bold mb-4"></h3>
                 <div className="grid md:grid-cols-2 gap-6 items-center">
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <Image
-                      src="/developer-insights.svg"
+                    <MagnetImage
+                      src="/WhatsApp Image 2025-06-04 at 22.31.33.jpeg"
                       width={400}
                       height={300}
                       alt="Developer Insights Dashboard"
-                      className="object-contain"
+                      className="object-contain rounded-xl"
                     />
                   </div>
                   <div className="space-y-4">
                     <p className="text-muted-foreground">
                       Make data-driven decisions with our developer tools:
                     </p>
-                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li>Performance Reports: Detailed analysis of improvements</li>
-                      <li>Variant Comparison: Side-by-side metrics of different versions</li>
-                      <li>User Feedback: Direct insights from end-users</li>
-                      <li>Optimization Suggestions: AI-powered recommendations</li>
-                      <li>Integration APIs: Custom analytics and tracking</li>
+                    <ul className="list-disc list-inside space-y-2 text-purple-900 bg-gradient-to-br from-purple-100 via-purple-50 to-indigo-100 rounded-xl p-6 shadow-sm">
+                      <li className="marker:text-purple-400">Performance Reports: Detailed analysis of improvements</li>
+                      <li className="marker:text-purple-400">Variant Comparison: Side-by-side metrics of different versions</li>
+                      <li className="marker:text-purple-400">User Feedback: Direct insights from end-users</li>
+                      <li className="marker:text-purple-400">Optimization Suggestions: AI-powered recommendations</li>
+                      <li className="marker:text-purple-400">Integration APIs: Custom analytics and tracking</li>
                     </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-indigo-50 via-white to-blue-50 relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          <div className="container mx-auto px-4 md:px-6 relative">
+            <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+              <div className="inline-block rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-medium text-indigo-800 mb-2">
+                Evolution Tracking
+              </div>
+              <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-blue-600">
+                Variant Evolution
+              </h2>
+              <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+                Watch how user engagement improves as our AI evolves your frontend
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-5xl pt-12">
+              <div className="rounded-2xl border bg-background p-8 shadow-xl backdrop-blur-sm bg-white/80 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-blue-50/50"></div>
+                <div className="relative">
+                  <div className="h-[400px]">
+                    <Line
+                      data={{
+                        labels: ['Variant A', 'Variant B', 'Variant C', 'Variant D', 'Variant E'],
+                        datasets: [
+                          {
+                            label: 'User Engagement Score',
+                            data: [65, 72, 78, 85, 92],
+                            borderColor: 'rgb(99, 102, 241)',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            borderWidth: 3,
+                          },
+                          {
+                            label: 'Conversion Rate',
+                            data: [45, 52, 58, 65, 72],
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            borderWidth: 3,
+                          }
+                        ],
+                      }}
+                      options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: {
+                            position: 'top',
+                            labels: {
+                              font: {
+                                size: 14,
+                                weight: 'bold',
+                                family: "'Inter', sans-serif"
+                              },
+                              padding: 20,
+                              usePointStyle: true,
+                              pointStyle: 'circle'
+                            }
+                          },
+                          tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            titleFont: {
+                              size: 14,
+                              weight: 'bold',
+                              family: "'Inter', sans-serif"
+                            },
+                            bodyFont: {
+                              size: 13,
+                              family: "'Inter', sans-serif"
+                            },
+                            cornerRadius: 8,
+                            displayColors: true,
+                            boxWidth: 8,
+                            boxHeight: 8,
+                          }
+                        },
+                        scales: {
+                          y: {
+                            beginAtZero: true,
+                            grid: {
+                              color: 'rgba(0, 0, 0, 0.05)',
+                              drawBorder: false,
+                            },
+                            ticks: {
+                              font: {
+                                size: 12,
+                                family: "'Inter', sans-serif"
+                              },
+                              padding: 10,
+                              color: '#6b7280'
+                            },
+                            border: {
+                              display: false
+                            }
+                          },
+                          x: {
+                            grid: {
+                              display: false
+                            },
+                            ticks: {
+                              font: {
+                                size: 12,
+                                family: "'Inter', sans-serif"
+                              },
+                              padding: 10,
+                              color: '#6b7280'
+                            },
+                            border: {
+                              display: false
+                            }
+                          }
+                        },
+                        animation: {
+                          duration: 2000,
+                          easing: 'easeInOutQuart'
+                        },
+                        interaction: {
+                          intersect: false,
+                          mode: 'index'
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="p-6 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100/50 border border-indigo-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 rounded-lg bg-indigo-100">
+                          <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                          </svg>
+                        </div>
+                        <h4 className="font-semibold text-lg text-indigo-900">Continuous Improvement</h4>
+                      </div>
+                      <p className="text-sm text-indigo-700">Each variant builds upon the success of previous versions</p>
+                    </div>
+                    <div className="p-6 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 rounded-lg bg-emerald-100">
+                          <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                        <h4 className="font-semibold text-lg text-emerald-900">Data-Driven Evolution</h4>
+                      </div>
+                      <p className="text-sm text-emerald-700">AI analyzes user behavior to optimize each iteration</p>
+                    </div>
+                    <div className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 rounded-lg bg-blue-100">
+                          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <h4 className="font-semibold text-lg text-blue-900">Measurable Results</h4>
+                      </div>
+                      <p className="text-sm text-blue-700">Track engagement and conversion improvements in real-time</p>
+                    </div>
                   </div>
                 </div>
               </div>

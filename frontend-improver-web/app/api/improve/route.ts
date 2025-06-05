@@ -44,11 +44,19 @@ export async function GET(request: Request) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'log', message })}\n\n`));
         };
 
-        // Clone the repository
-        sendLog('Cloning repository...');
-        const cloneUrl = `https://x-access-token:${token}@github.com/${repo}.git`;
-        await execAsync(`git clone ${cloneUrl} ${tempDir}`);
-        sendLog('Repository cloned successfully');
+        // Check if repository is already cloned
+        const gitDir = path.join(tempDir, '.git');
+        if (!fs.existsSync(gitDir)) {
+          // Clone the repository
+          sendLog('Cloning repository...');
+          const cloneUrl = `https://x-access-token:${token}@github.com/${repo}.git`;
+          await execAsync(`git clone ${cloneUrl} ${tempDir}`);
+          sendLog('Repository cloned successfully');
+        } else {
+          sendLog('Repository already exists, pulling latest changes...');
+          await execAsync(`cd ${tempDir} && git pull origin main`);
+          sendLog('Latest changes pulled successfully');
+        }
 
         // Create a new branch with timestamp
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
