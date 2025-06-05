@@ -1,90 +1,65 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
-export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const range = searchParams.get('range') || '7d';
-    
-    // Create analytics directory if it doesn't exist
-    const analyticsDir = path.join(process.cwd(), 'analytics');
-    if (!fs.existsSync(analyticsDir)) {
-      fs.mkdirSync(analyticsDir, { recursive: true });
-    }
-
-    // Get all analytics files
-    const files = fs.readdirSync(analyticsDir)
-      .filter(file => file.endsWith('.json'))
-      .map(file => path.join(analyticsDir, file));
-
-    // Filter files based on time range
-    const now = new Date();
-    const filteredFiles = files.filter(file => {
-      const fileDate = new Date(file.split('/').pop()?.split('.')[0] || '');
-      switch (range) {
-        case '7d':
-          return now.getTime() - fileDate.getTime() <= 7 * 24 * 60 * 60 * 1000;
-        case '30d':
-          return now.getTime() - fileDate.getTime() <= 30 * 24 * 60 * 60 * 1000;
-        default:
-          return true;
-      }
-    });
-
-    // Read and combine all analytics data
-    const analytics = filteredFiles.flatMap(file => {
-      const content = fs.readFileSync(file, 'utf-8');
-      return JSON.parse(content);
-    });
-
-    return NextResponse.json(analytics);
-  } catch (error) {
-    console.error('Error reading analytics:', error);
-    return NextResponse.json(
-      { error: 'Failed to read analytics' },
-      { status: 500 }
-    );
-  }
-}
+const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
     const data = await request.json();
-    
-    // Create analytics directory if it doesn't exist
-    const analyticsDir = path.join(process.cwd(), 'analytics');
-    if (!fs.existsSync(analyticsDir)) {
-      fs.mkdirSync(analyticsDir, { recursive: true });
-    }
+    const { type, data: interactionData, timestamp } = data;
 
-    // Create a file for today's analytics
-    const today = new Date().toISOString().split('T')[0];
-    const analyticsFile = path.join(analyticsDir, `${today}.json`);
-
-    // Read existing analytics or create new array
-    let analytics = [];
-    if (fs.existsSync(analyticsFile)) {
-      const content = fs.readFileSync(analyticsFile, 'utf-8');
-      analytics = JSON.parse(content);
-    }
-
-    // Add new interaction with variant information
-    analytics.push({
-      ...data,
-      timestamp: new Date().toISOString(),
-      variant: data.variant || 'original' // Default to 'original' if not specified
+    // Store the interaction in the database
+    const interaction = await prisma.interaction.create({
+      data: {
+        type,
+        data: interactionData,
+        timestamp: new Date(timestamp),
+        userId: session.user?.id as string,
+        repository: session.user?.repository as string,
+      },
     });
 
-    // Write back to file
-    fs.writeFileSync(analyticsFile, JSON.stringify(analytics, null, 2));
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, interaction });
   } catch (error) {
     console.error('Error saving analytics:', error);
-    return NextResponse.json(
-      { error: 'Failed to save analytics' },
-      { status: 500 }
-    );
+    return new NextResponse('Internal Server Error', { status: 500 });
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return new NextResponse('Unauthorized', { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const repository = searchParams.get('repository');
+
+    if (!repository) {
+      return new NextResponse('Repository parameter is required', { status: 400 });
+    }
+
+    // Get interactions for the repository
+    const interactions = await prisma.interaction.findMany({
+      where: {
+        repository,
+      },
+      orderBy: {
+        timestamp: 'desc',
+      },
+    });
+
+    return NextResponse.json({ interactions });
+  } catch (error) {
+    console.error('Error fetching analytics:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 } 

@@ -72,40 +72,7 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-    setLogs([]);
-    setShowLogs(true);
-
-    try {
-      // Start SSE connection
-      const eventSource = new EventSource(`/api/improve?repo=${encodeURIComponent(selectedRepo)}&token=${session?.accessToken}`);
-
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'log') {
-          setLogs(prev => [...prev, data.message]);
-        } else if (data.type === 'complete') {
-          eventSource.close();
-          setLoading(false);
-          router.push('/dashboard');
-        } else if (data.type === 'error') {
-          eventSource.close();
-          setError(data.message);
-          setLoading(false);
-        }
-      };
-
-      eventSource.onerror = () => {
-        eventSource.close();
-        setError('Connection lost');
-        setLoading(false);
-      };
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      setLoading(false);
-    }
+    router.push(`/improve?repo=${encodeURIComponent(selectedRepo)}&token=${session?.accessToken}`);
   };
 
   return (
