@@ -1,35 +1,38 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '../../auth/auth.config';
 
 const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
+    
     if (!session) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const data = await request.json();
-    const { type, data: interactionData, timestamp } = data;
+    const body = await request.json();
+    const { type, data, timestamp } = body;
 
     // Store the interaction in the database
     const interaction = await prisma.interaction.create({
       data: {
         type,
-        data: interactionData,
+        data: JSON.stringify(data),
         timestamp: new Date(timestamp),
-        userId: session.user?.id as string,
-        repository: session.user?.repository as string,
+        userId: session.user?.email || 'anonymous',
       },
     });
 
     return NextResponse.json({ success: true, interaction });
   } catch (error) {
-    console.error('Error saving analytics:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    console.error('Error storing interaction:', error);
+    return NextResponse.json(
+      { error: 'Failed to store interaction' },
+      { status: 500 }
+    );
   }
 }
 
@@ -37,29 +40,53 @@ export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const repository = searchParams.get('repository');
+    const range = searchParams.get('range') || '7d';
 
-    if (!repository) {
-      return new NextResponse('Repository parameter is required', { status: 400 });
+    // Calculate date range
+    const now = new Date();
+    let startDate = new Date();
+    switch (range) {
+      case '30d':
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case '7d':
+        startDate.setDate(now.getDate() - 7);
+        break;
+      // 'all' doesn't need a start date
     }
 
     // Get interactions for the repository
     const interactions = await prisma.interaction.findMany({
       where: {
-        repository,
+        ...(repository ? { repository } : {}),
+        ...(range !== 'all' ? {
+          timestamp: {
+            gte: startDate
+          }
+        } : {})
       },
       orderBy: {
         timestamp: 'desc',
       },
     });
 
-    return NextResponse.json({ interactions });
+    // Transform the data to include parsed JSON data
+    const transformedInteractions = interactions.map(interaction => ({
+      ...interaction,
+      data: JSON.parse(interaction.data as string)
+    }));
+
+    return NextResponse.json(transformedInteractions);
   } catch (error) {
     console.error('Error fetching analytics:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch analytics' },
+      { status: 500 }
+    );
   }
 } 

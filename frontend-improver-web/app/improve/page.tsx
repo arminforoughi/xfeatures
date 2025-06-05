@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import MagnetImage from "../../components/ui/MagnetImage";
 
-export default function ImprovePage() {
+// Client component that handles search params
+function ImproveContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [logs, setLogs] = useState<string[]>([]);
@@ -112,5 +113,26 @@ export default function ImprovePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+// Loading component
+function Loading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-4 text-lg text-gray-600">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main page component
+export default function ImprovePage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ImproveContent />
+    </Suspense>
   );
 } 

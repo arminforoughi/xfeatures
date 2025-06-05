@@ -31,82 +31,121 @@ export async function GET(request: Request) {
   }
 
   const encoder = new TextEncoder();
+  let controller: ReadableStreamDefaultController | null = null;
+  let isStreamClosed = false;
+
   const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        // Create a temporary directory for the repository
-        const tempDir = path.join(process.cwd(), 'temp', repo.replace('/', '_'));
-        if (!fs.existsSync(tempDir)) {
-          fs.mkdirSync(tempDir, { recursive: true });
-        }
-
-        const sendLog = (message: string) => {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'log', message })}\n\n`));
-        };
-
-        // Check if repository is already cloned
-        const gitDir = path.join(tempDir, '.git');
-        if (!fs.existsSync(gitDir)) {
-          // Clone the repository
-          sendLog('Cloning repository...');
-          const cloneUrl = `https://x-access-token:${token}@github.com/${repo}.git`;
-          await execAsync(`git clone ${cloneUrl} ${tempDir}`);
-          sendLog('Repository cloned successfully');
-        } else {
-          sendLog('Repository already exists, pulling latest changes...');
-          await execAsync(`cd ${tempDir} && git pull origin main`);
-          sendLog('Latest changes pulled successfully');
-        }
-
-        // Create a new branch with timestamp
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const branchName = `improved-landing-${timestamp}`;
-        sendLog(`Creating new branch: ${branchName}`);
-        await execAsync(`cd ${tempDir} && git checkout -b ${branchName}`);
-
-        // Find the landing page
-        sendLog('Searching for landing page...');
-        const landingPagePath = await findLandingPage(tempDir);
-        sendLog(`Found landing page at: ${landingPagePath}`);
-
-        if (!landingPagePath) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: 'Could not find landing page in the repository' })}\n\n`));
-          return;
-        }
-
-        // Read the landing page content
-        sendLog('Reading landing page content...');
-        const content = fs.readFileSync(landingPagePath, 'utf-8');
-
-        // Use AI to analyze and improve the landing page
-        sendLog('Analyzing and improving with AI...');
-        const improvedContent = await improveWithAI(content, landingPagePath, sendLog);
-        
-        // Write the improved content back to the file
-        sendLog('Writing improved content...');
-        fs.writeFileSync(landingPagePath, improvedContent);
-
-        // Commit and push changes
-        sendLog('Committing changes...');
-        await execAsync(`cd ${tempDir} && git add .`);
-        await execAsync(`cd ${tempDir} && git commit -m "Improve landing page with AI enhancements"`);
-        sendLog('Pushing changes to GitHub...');
-        await execAsync(`cd ${tempDir} && git push origin ${branchName}`);
-
-        // Cleanup
-        sendLog('Cleaning up temporary files...');
-        fs.rmSync(tempDir, { recursive: true, force: true });
-
-        sendLog('Improvement completed successfully!');
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'complete' })}\n\n`));
-      } catch (error) {
-        console.error('Error improving repository:', error);
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: 'Failed to improve repository' })}\n\n`));
-      } finally {
-        controller.close();
-      }
+    start(c) {
+      controller = c;
     },
+    cancel() {
+      isStreamClosed = true;
+    }
   });
+
+  const sendLog = (message: string) => {
+    if (!isStreamClosed && controller) {
+      try {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'log', message })}\n\n`));
+      } catch (error) {
+        console.error('Error sending log:', error);
+      }
+    }
+  };
+
+  const sendError = (message: string) => {
+    if (!isStreamClosed && controller) {
+      try {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message })}\n\n`));
+        controller.close();
+        isStreamClosed = true;
+      } catch (error) {
+        console.error('Error sending error message:', error);
+      }
+    }
+  };
+
+  const sendComplete = () => {
+    if (!isStreamClosed && controller) {
+      try {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'complete' })}\n\n`));
+        controller.close();
+        isStreamClosed = true;
+      } catch (error) {
+        console.error('Error sending complete message:', error);
+      }
+    }
+  };
+
+  // Start the improvement process
+  (async () => {
+    try {
+      // Create a temporary directory for the repository
+      const tempDir = path.join(process.cwd(), 'temp', repo.replace('/', '_'));
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+
+      // Check if repository is already cloned
+      const gitDir = path.join(tempDir, '.git');
+      if (!fs.existsSync(gitDir)) {
+        // Clone the repository
+        sendLog('Cloning repository...');
+        const cloneUrl = `https://x-access-token:${token}@github.com/${repo}.git`;
+        await execAsync(`git clone ${cloneUrl} ${tempDir}`);
+        sendLog('Repository cloned successfully');
+      } else {
+        sendLog('Repository already exists, pulling latest changes...');
+        await execAsync(`cd ${tempDir} && git pull origin main`);
+        sendLog('Latest changes pulled successfully');
+      }
+
+      // Create a new branch with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const branchName = `improved-landing-${timestamp}`;
+      sendLog(`Creating new branch: ${branchName}`);
+      await execAsync(`cd ${tempDir} && git checkout -b ${branchName}`);
+
+      // Find the landing page
+      sendLog('Searching for landing page...');
+      const landingPagePath = await findLandingPage(tempDir);
+      sendLog(`Found landing page at: ${landingPagePath}`);
+
+      if (!landingPagePath) {
+        sendError('Could not find landing page in the repository');
+        return;
+      }
+
+      // Read the landing page content
+      sendLog('Reading landing page content...');
+      const content = fs.readFileSync(landingPagePath, 'utf-8');
+
+      // Use AI to analyze and improve the landing page
+      sendLog('Analyzing and improving with AI...');
+      const improvedContent = await improveWithAI(content, landingPagePath, sendLog);
+      
+      // Write the improved content back to the file
+      sendLog('Writing improved content...');
+      fs.writeFileSync(landingPagePath, improvedContent);
+
+      // Commit and push changes
+      sendLog('Committing changes...');
+      await execAsync(`cd ${tempDir} && git add .`);
+      await execAsync(`cd ${tempDir} && git commit -m "Improve landing page with AI enhancements"`);
+      sendLog('Pushing changes to GitHub...');
+      await execAsync(`cd ${tempDir} && git push origin ${branchName}`);
+
+      // Cleanup
+      sendLog('Cleaning up temporary files...');
+      fs.rmSync(tempDir, { recursive: true, force: true });
+
+      sendLog('Improvement completed successfully!');
+      sendComplete();
+    } catch (error) {
+      console.error('Error improving repository:', error);
+      sendError(error instanceof Error ? error.message : 'Failed to improve repository');
+    }
+  })();
 
   return new Response(stream, {
     headers: {

@@ -29,9 +29,20 @@ ChartJS.register(
 );
 
 interface AnalyticsData {
+  id: string;
   type: string;
-  data: any;
+  data: {
+    depth?: number;
+    seconds?: number;
+    element?: string;
+    text?: string;
+    id?: string;
+    class?: string;
+    formId?: string;
+    formAction?: string;
+  };
   timestamp: string;
+  userId: string;
   variant?: 'original' | 'improved';
 }
 
@@ -48,10 +59,14 @@ export default function Dashboard() {
   const fetchAnalytics = async () => {
     try {
       const response = await fetch(`/api/analytics?range=${timeRange}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics');
+      }
       const data = await response.json();
-      setAnalytics(data);
+      setAnalytics(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching analytics:', error);
+      setAnalytics([]);
     } finally {
       setLoading(false);
     }
@@ -67,20 +82,20 @@ export default function Dashboard() {
         {
           label: 'Original',
           data: [
-            original.filter(a => a.data.depth <= 25).length,
-            original.filter(a => a.data.depth > 25 && a.data.depth <= 50).length,
-            original.filter(a => a.data.depth > 50 && a.data.depth <= 75).length,
-            original.filter(a => a.data.depth > 75).length,
+            original.filter(a => a.data.depth && a.data.depth <= 25).length,
+            original.filter(a => a.data.depth && a.data.depth > 25 && a.data.depth <= 50).length,
+            original.filter(a => a.data.depth && a.data.depth > 50 && a.data.depth <= 75).length,
+            original.filter(a => a.data.depth && a.data.depth > 75).length,
           ],
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
         },
         {
           label: 'Improved',
           data: [
-            improved.filter(a => a.data.depth <= 25).length,
-            improved.filter(a => a.data.depth > 25 && a.data.depth <= 50).length,
-            improved.filter(a => a.data.depth > 50 && a.data.depth <= 75).length,
-            improved.filter(a => a.data.depth > 75).length,
+            improved.filter(a => a.data.depth && a.data.depth <= 25).length,
+            improved.filter(a => a.data.depth && a.data.depth > 25 && a.data.depth <= 50).length,
+            improved.filter(a => a.data.depth && a.data.depth > 50 && a.data.depth <= 75).length,
+            improved.filter(a => a.data.depth && a.data.depth > 75).length,
           ],
           backgroundColor: 'rgba(54, 162, 235, 0.5)',
         },
@@ -98,11 +113,11 @@ export default function Dashboard() {
         {
           label: 'Original',
           data: [
-            original.filter(a => a.data.seconds <= 30).length,
-            original.filter(a => a.data.seconds > 30 && a.data.seconds <= 60).length,
-            original.filter(a => a.data.seconds > 60 && a.data.seconds <= 120).length,
-            original.filter(a => a.data.seconds > 120 && a.data.seconds <= 300).length,
-            original.filter(a => a.data.seconds > 300).length,
+            original.filter(a => a.data.seconds && a.data.seconds <= 30).length,
+            original.filter(a => a.data.seconds && a.data.seconds > 30 && a.data.seconds <= 60).length,
+            original.filter(a => a.data.seconds && a.data.seconds > 60 && a.data.seconds <= 120).length,
+            original.filter(a => a.data.seconds && a.data.seconds > 120 && a.data.seconds <= 300).length,
+            original.filter(a => a.data.seconds && a.data.seconds > 300).length,
           ],
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -110,11 +125,11 @@ export default function Dashboard() {
         {
           label: 'Improved',
           data: [
-            improved.filter(a => a.data.seconds <= 30).length,
-            improved.filter(a => a.data.seconds > 30 && a.data.seconds <= 60).length,
-            improved.filter(a => a.data.seconds > 60 && a.data.seconds <= 120).length,
-            improved.filter(a => a.data.seconds > 120 && a.data.seconds <= 300).length,
-            improved.filter(a => a.data.seconds > 300).length,
+            improved.filter(a => a.data.seconds && a.data.seconds <= 30).length,
+            improved.filter(a => a.data.seconds && a.data.seconds > 30 && a.data.seconds <= 60).length,
+            improved.filter(a => a.data.seconds && a.data.seconds > 60 && a.data.seconds <= 120).length,
+            improved.filter(a => a.data.seconds && a.data.seconds > 120 && a.data.seconds <= 300).length,
+            improved.filter(a => a.data.seconds && a.data.seconds > 300).length,
           ],
           borderColor: 'rgb(54, 162, 235)',
           backgroundColor: 'rgba(54, 162, 235, 0.5)',
@@ -217,9 +232,9 @@ export default function Dashboard() {
                   <span className="font-medium">
                     {Math.round(
                       analytics
-                        .filter(a => a.type === 'time_spent')
-                        .reduce((acc, curr) => acc + curr.data.seconds, 0) /
-                        analytics.filter(a => a.type === 'time_spent').length
+                        .filter(a => a.type === 'time_spent' && a.data.seconds)
+                        .reduce((acc, curr) => acc + (curr.data.seconds || 0), 0) /
+                        analytics.filter(a => a.type === 'time_spent').length || 0
                     )}s
                   </span>
                 </div>
