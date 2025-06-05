@@ -1,6 +1,21 @@
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+    user?: {
+      email?: string | null;
+      name?: string | null;
+      image?: string | null;
+    };
+  }
+
+  interface JWT {
+    accessToken?: string;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
@@ -21,14 +36,14 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken;
+      if (token.accessToken) {
+        session.accessToken = token.accessToken;
+      }
       return session;
     },
   },
   pages: {
     signIn: '/',
   },
-  session: {
-    strategy: 'jwt',
-  },
+  secret: process.env.NEXTAUTH_SECRET,
 }; 

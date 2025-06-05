@@ -14,7 +14,14 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { type, data, timestamp } = body;
+    const { type, data, timestamp, repository } = body;
+
+    if (!repository) {
+      return NextResponse.json(
+        { error: 'Repository is required' },
+        { status: 400 }
+      );
+    }
 
     // Store the interaction in the database
     const interaction = await prisma.interaction.create({
@@ -23,6 +30,7 @@ export async function POST(request: Request) {
         data: JSON.stringify(data),
         timestamp: new Date(timestamp),
         userId: session.user?.email || 'anonymous',
+        repository,
       },
     });
 
@@ -47,6 +55,13 @@ export async function GET(request: Request) {
     const repository = searchParams.get('repository');
     const range = searchParams.get('range') || '7d';
 
+    if (!repository) {
+      return NextResponse.json(
+        { error: 'Repository is required' },
+        { status: 400 }
+      );
+    }
+
     // Calculate date range
     const now = new Date();
     let startDate = new Date();
@@ -63,7 +78,7 @@ export async function GET(request: Request) {
     // Get interactions for the repository
     const interactions = await prisma.interaction.findMany({
       where: {
-        ...(repository ? { repository } : {}),
+        repository,
         ...(range !== 'all' ? {
           timestamp: {
             gte: startDate
