@@ -24,6 +24,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showRepoForm, setShowRepoForm] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [showLogs, setShowLogs] = useState(false);
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -49,29 +51,36 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setLogs([]);
+    setShowLogs(true);
 
     try {
-      const response = await fetch('/api/improve', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          repo: selectedRepo,
-          accessToken: session?.accessToken,
-        }),
-      });
+      // Start SSE connection
+      const eventSource = new EventSource(`/api/improve?repo=${encodeURIComponent(selectedRepo)}&token=${session?.accessToken}`);
 
-      const data = await response.json();
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'log') {
+          setLogs(prev => [...prev, data.message]);
+        } else if (data.type === 'complete') {
+          eventSource.close();
+          setLoading(false);
+          router.push('/dashboard');
+        } else if (data.type === 'error') {
+          eventSource.close();
+          setError(data.message);
+          setLoading(false);
+        }
+      };
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to improve repository');
-      }
+      eventSource.onerror = () => {
+        eventSource.close();
+        setError('Connection lost');
+        setLoading(false);
+      };
 
-      router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
       setLoading(false);
     }
   };
@@ -170,6 +179,13 @@ export default function Home() {
                     </Button>
                     {error && (
                       <p className="text-sm text-destructive">{error}</p>
+                    )}
+                    {showLogs && (
+                      <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg text-black font-mono text-sm overflow-auto max-h-60">
+                        {logs.map((log, index) => (
+                          <div key={index} className="whitespace-pre-wrap">{log}</div>
+                        ))}
+                      </div>
                     )}
                   </form>
                 )}

@@ -13,71 +13,100 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function POST(request: Request) {
-  try {
-    const { repo, accessToken } = await request.json();
+// Helper function to send SSE message
+function sendSSE(res: any, data: any) {
+  res.write(`data: ${JSON.stringify(data)}\n\n`);
+}
 
-    if (!repo || !accessToken) {
-      return NextResponse.json(
-        { error: 'Repository and access token are required' },
-        { status: 400 }
-      );
-    }
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const repo = searchParams.get('repo');
+  const token = searchParams.get('token');
 
-    // Create a temporary directory for the repository
-    const tempDir = path.join(process.cwd(), 'temp', repo.replace('/', '_'));
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
-
-    // Clone the repository
-    const cloneUrl = `https://x-access-token:${accessToken}@github.com/${repo}.git`;
-    await execAsync(`git clone ${cloneUrl} ${tempDir}`);
-
-    // Create a new branch with timestamp to ensure uniqueness
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const branchName = `improved-landing-${timestamp}`;
-    await execAsync(`cd ${tempDir} && git checkout -b ${branchName}`);
-
-    // Find the landing page
-    const landingPagePath = await findLandingPage(tempDir);
-    console.log('Found landing page at:', landingPagePath);
-
-    if (!landingPagePath) {
-      return NextResponse.json(
-        { error: 'Could not find landing page in the repository' },
-        { status: 400 }
-      );
-    }
-
-    // Read the landing page content
-    const content = fs.readFileSync(landingPagePath, 'utf-8');
-
-    // Use AI to analyze and improve the landing page
-    const improvedContent = await improveWithAI(content, landingPagePath);
-    
-    // Write the improved content back to the file
-    fs.writeFileSync(landingPagePath, improvedContent);
-
-    // Commit and push changes
-    await execAsync(`cd ${tempDir} && git add .`);
-    await execAsync(`cd ${tempDir} && git commit -m "Improve landing page with AI enhancements"`);
-    await execAsync(`cd ${tempDir} && git push origin ${branchName}`);
-
-    // Cleanup
-    fs.rmSync(tempDir, { recursive: true, force: true });
-
-    return NextResponse.json({
-      success: true,
-      message: 'Repository improved successfully with AI enhancements',
-    });
-  } catch (error) {
-    console.error('Error improving repository:', error);
-    return NextResponse.json(
-      { error: 'Failed to improve repository' },
-      { status: 500 }
+  if (!repo || !token) {
+    return new Response(
+      JSON.stringify({ error: 'Repository and access token are required' }),
+      { status: 400 }
     );
   }
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        // Create a temporary directory for the repository
+        const tempDir = path.join(process.cwd(), 'temp', repo.replace('/', '_'));
+        if (!fs.existsSync(tempDir)) {
+          fs.mkdirSync(tempDir, { recursive: true });
+        }
+
+        const sendLog = (message: string) => {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'log', message })}\n\n`));
+        };
+
+        // Clone the repository
+        sendLog('Cloning repository...');
+        const cloneUrl = `https://x-access-token:${token}@github.com/${repo}.git`;
+        await execAsync(`git clone ${cloneUrl} ${tempDir}`);
+        sendLog('Repository cloned successfully');
+
+        // Create a new branch with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const branchName = `improved-landing-${timestamp}`;
+        sendLog(`Creating new branch: ${branchName}`);
+        await execAsync(`cd ${tempDir} && git checkout -b ${branchName}`);
+
+        // Find the landing page
+        sendLog('Searching for landing page...');
+        const landingPagePath = await findLandingPage(tempDir);
+        sendLog(`Found landing page at: ${landingPagePath}`);
+
+        if (!landingPagePath) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: 'Could not find landing page in the repository' })}\n\n`));
+          return;
+        }
+
+        // Read the landing page content
+        sendLog('Reading landing page content...');
+        const content = fs.readFileSync(landingPagePath, 'utf-8');
+
+        // Use AI to analyze and improve the landing page
+        sendLog('Analyzing and improving with AI...');
+        const improvedContent = await improveWithAI(content, landingPagePath);
+        
+        // Write the improved content back to the file
+        sendLog('Writing improved content...');
+        fs.writeFileSync(landingPagePath, improvedContent);
+
+        // Commit and push changes
+        sendLog('Committing changes...');
+        await execAsync(`cd ${tempDir} && git add .`);
+        await execAsync(`cd ${tempDir} && git commit -m "Improve landing page with AI enhancements"`);
+        sendLog('Pushing changes to GitHub...');
+        await execAsync(`cd ${tempDir} && git push origin ${branchName}`);
+
+        // Cleanup
+        sendLog('Cleaning up temporary files...');
+        fs.rmSync(tempDir, { recursive: true, force: true });
+
+        sendLog('Improvement completed successfully!');
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'complete' })}\n\n`));
+      } catch (error) {
+        console.error('Error improving repository:', error);
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', message: 'Failed to improve repository' })}\n\n`));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 }
 
 async function findLandingPage(dir: string): Promise<string | null> {
