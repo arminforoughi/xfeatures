@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import MagnetImage from "../../components/ui/MagnetImage";
 
-export default function ImprovePage() {
+function ImprovePageContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -126,5 +126,17 @@ export default function ImprovePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ImprovePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <ImprovePageContent />
+    </Suspense>
   );
 } 
