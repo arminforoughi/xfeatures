@@ -99,8 +99,8 @@ export default function Home() {
               priority
             />
             <div className="flex flex-col">
-              <span className="text-5xl sm:text-6xl font-extrabold tracking-tight text-primary drop-shadow-md">Survival of the Feature</span>
-              <span className="text-lg sm:text-2xl font-medium text-muted-foreground mt-1">AI-Powered Frontend Evolution</span>
+              <span className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-primary drop-shadow-md">Survival of the Feature</span>
+              <span className="text-base sm:text-lg md:text-2xl font-medium text-muted-foreground mt-1">AI-Powered Frontend Evolution</span>
             </div>
           </div>
         </div>
