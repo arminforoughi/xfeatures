@@ -34,8 +34,9 @@ export async function POST(request: Request) {
     const cloneUrl = `https://x-access-token:${accessToken}@github.com/${repo}.git`;
     await execAsync(`git clone ${cloneUrl} ${tempDir}`);
 
-    // Create a new branch
-    const branchName = 'improved-landing';
+    // Create a new branch with timestamp to ensure uniqueness
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const branchName = `improved-landing-${timestamp}`;
     await execAsync(`cd ${tempDir} && git checkout -b ${branchName}`);
 
     // Find the landing page
@@ -205,13 +206,43 @@ async function getAllFiles(dir: string): Promise<string[]> {
 
 function isFrontendFile(filePath: string): boolean {
   const ext = path.extname(filePath).toLowerCase();
-  return ['.html', '.js', '.jsx', '.tsx', '.ts'].includes(ext);
+  // Only consider actual frontend files, exclude .ts files that aren't .tsx
+  return ['.html', '.js', '.jsx', '.tsx'].includes(ext);
 }
 
 async function hasLandingPageIndicators(filePath: string, indicators: string[]): Promise<boolean> {
   try {
+    // Skip API routes and other backend files
+    if (filePath.includes('/api/') || filePath.includes('/routes/') || filePath.includes('/server/')) {
+      return false;
+    }
+
     const content = fs.readFileSync(filePath, 'utf-8').toLowerCase();
-    return indicators.some(indicator => content.includes(indicator));
+    
+    // Check for minimum number of indicators (at least 2)
+    const foundIndicators = indicators.filter(indicator => content.includes(indicator));
+    if (foundIndicators.length < 2) {
+      return false;
+    }
+
+    // Check for frontend framework indicators
+    const hasFrameworkIndicators = 
+      content.includes('react') || 
+      content.includes('next') || 
+      content.includes('use client') ||
+      content.includes('export default function') ||
+      content.includes('export default class');
+
+    // Check for UI structure indicators
+    const hasStructureIndicators = 
+      content.includes('<div') || 
+      content.includes('className=') || 
+      content.includes('style=') ||
+      content.includes('return (') ||
+      content.includes('return <');
+
+    // Must have both framework and structure indicators
+    return hasFrameworkIndicators && hasStructureIndicators;
   } catch (error) {
     console.error('Error checking for landing page indicators:', error);
     return false;

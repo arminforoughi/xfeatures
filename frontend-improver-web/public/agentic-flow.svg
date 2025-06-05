@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#f8fafc" rx="8" ry="8"/>
+  
+  <!-- Flow Diagram -->
+  <g transform="translate(40, 40)">
+    <!-- Code Analysis -->
+    <rect x="0" y="0" width="80" height="60" fill="#e2e8f0" rx="4" ry="4"/>
+    <text x="40" y="35" text-anchor="middle" fill="#1e293b" font-size="12">Code Analysis</text>
+    
+    <!-- Arrow -->
+    <path d="M90 30 L110 30" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- Pattern Recognition -->
+    <rect x="120" y="0" width="80" height="60" fill="#e2e8f0" rx="4" ry="4"/>
+    <text x="160" y="35" text-anchor="middle" fill="#1e293b" font-size="12">Pattern Recognition</text>
+    
+    <!-- Arrow -->
+    <path d="M210 30 L230 30" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- Optimization -->
+    <rect x="240" y="0" width="80" height="60" fill="#e2e8f0" rx="4" ry="4"/>
+    <text x="280" y="35" text-anchor="middle" fill="#1e293b" font-size="12">Optimization</text>
+    
+    <!-- Vertical Arrow -->
+    <path d="M280 70 L280 90" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- Testing -->
+    <rect x="240" y="100" width="80" height="60" fill="#e2e8f0" rx="4" ry="4"/>
+    <text x="280" y="135" text-anchor="middle" fill="#1e293b" font-size="12">Testing</text>
+    
+    <!-- Arrow -->
+    <path d="M240 130 L220 130" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- Deployment -->
+    <rect x="120" y="100" width="80" height="60" fill="#e2e8f0" rx="4" ry="4"/>
+    <text x="160" y="135" text-anchor="middle" fill="#1e293b" font-size="12">Deployment</text>
+    
+    <!-- Arrow -->
+    <path d="M120 130 L100 130" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+    
+    <!-- Feedback Loop -->
+    <path d="M40 60 L40 130" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  </g>
+  
+  <!-- Arrow Marker -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5"
+        markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+</svg> 

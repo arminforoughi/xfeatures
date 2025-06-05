@@ -23,6 +23,7 @@ export default function Home() {
   const [selectedRepo, setSelectedRepo] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showRepoForm, setShowRepoForm] = useState(false);
 
   useEffect(() => {
     const fetchRepos = async () => {
@@ -78,55 +79,68 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center">
-            <span className="text-3xl font-bold">Survival of the Features</span>
+        <div className="container mx-auto flex h-28 items-center justify-between px-4">
+          <div className="flex items-center space-x-6">
+            <Image
+              src="/jellyfish.png"
+              alt="Logo"
+              width={96}
+              height={96}
+              className=""
+              priority
+            />
+            <div className="flex flex-col">
+              <span className="text-5xl sm:text-6xl font-extrabold tracking-tight text-primary drop-shadow-md">Survival of the Feature</span>
+              <span className="text-lg sm:text-2xl font-medium text-muted-foreground mt-1">AI-Powered Frontend Evolution</span>
+            </div>
           </div>
-          {session ? (
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/dashboard')}
-            >
-              Dashboard
-            </Button>
-          ) : (
-            <Button
-              className="bg-black hover:bg-gray-800 text-white px-6 py-2 inline-flex items-center"
-              onClick={() => signIn('github')}
-            >
-              <Github className="h-5 w-5 mr-2" />
-              Sign in with GitHub
-            </Button>
-          )}
         </div>
       </header>
 
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-16 md:py-32 lg:py-40 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_500px]">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    AI-Powered Frontend Enhancement
+            <div className="grid gap-10 lg:grid-cols-[1fr_500px] lg:gap-20 xl:grid-cols-[1fr_600px] items-center">
+              <div className="flex flex-col justify-center space-y-6">
+                <div className="space-y-4">
+                  <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-primary drop-shadow-xl">
+                    Supercharge Your Frontend
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    Let AI improve your frontend code. Our system automatically analyzes and enhances your landing pages while tracking user engagement.
+                  <p className="max-w-[600px] text-xl sm:text-2xl text-muted-foreground font-medium">
+                    AI analyzes, improves, and tracks your landing pages—so you can focus on building, not debugging.
                   </p>
                 </div>
-                {!session ? (
-                  <div className="flex justify-start">
-                    <Button
-                      className="bg-black hover:bg-gray-800 text-white px-8 py-3 text-lg inline-flex items-center h-12"
-                      size="lg"
-                      onClick={() => signIn('github')}
-                    >
-                      <Github className="h-7 w-7 mr-3" />
-                      Sign in with GitHub
-                    </Button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+                <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                  <Button
+                    className="bg-black hover:bg-gray-800 text-white px-10 py-4 text-xl font-bold shadow-xl transition-transform hover:scale-105"
+                    size="lg"
+                    onClick={() => {
+                      if (session) {
+                        setShowRepoForm(true);
+                      } else {
+                        signIn('github');
+                      }
+                    }}
+                  >
+                    <Github className="h-7 w-7 mr-3" />
+                    Get Started
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="text-lg px-8 py-4 border-2 border-primary font-semibold transition-colors hover:bg-primary/10"
+                    size="lg"
+                    onClick={() => {
+                      window.scrollTo({
+                        top: document.body.scrollHeight / 3,
+                        behavior: 'smooth',
+                      });
+                    }}
+                  >
+                    Learn More
+                  </Button>
+                </div>
+                {showRepoForm && session && (
+                  <form onSubmit={handleSubmit} className="space-y-4 max-w-md mt-8">
                     <div>
                       <label htmlFor="repo" className="block text-sm font-medium text-muted-foreground mb-2">
                         Select Repository
@@ -135,7 +149,7 @@ export default function Home() {
                         id="repo"
                         value={selectedRepo}
                         onChange={(e) => setSelectedRepo(e.target.value)}
-                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-black ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                         required
                       >
                         <option value="">Select a repository</option>
@@ -163,10 +177,10 @@ export default function Home() {
               <div className="flex items-center justify-center">
                 <Image
                   src="/hero.svg"
-                  width={700}
-                  height={700}
+                  width={900}
+                  height={900}
                   alt="Survival of the Features"
-                  className="mx-auto aspect-square overflow-hidden rounded-xl object-cover object-center sm:w-full"
+                  className="mx-auto aspect-square overflow-hidden rounded-xl object-cover object-center sm:w-full shadow-2xl"
                 />
               </div>
             </div>
@@ -253,6 +267,127 @@ export default function Home() {
                   <p className="text-sm text-muted-foreground">
                     Monitor user engagement metrics and compare performance between versions.
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+              <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">Technology Deep Dive</h2>
+              <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+                Understanding how our AI-powered system works to improve your frontend code
+              </p>
+            </div>
+
+            <div className="mx-auto grid gap-8 pt-12 max-w-5xl">
+              <div className="rounded-lg border bg-background p-8">
+                <h3 className="text-2xl font-bold mb-4">Agentic Flow</h3>
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      Our system employs an intelligent agent that follows a sophisticated workflow:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      <li>Code Analysis: Deep semantic understanding of your frontend codebase</li>
+                      <li>Pattern Recognition: Identification of improvement opportunities</li>
+                      <li>Optimization Generation: Creation of optimized code variants</li>
+                      <li>Performance Testing: Validation of improvements</li>
+                      <li>Deployment: Seamless integration of changes</li>
+                    </ul>
+                  </div>
+                  <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
+                    <Image
+                      src="/agentic-flow.svg"
+                      width={400}
+                      height={300}
+                      alt="Agentic Flow Diagram"
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-background p-8">
+                <h3 className="text-2xl font-bold mb-4">Analysis Process</h3>
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
+                    <Image
+                      src="/analysis-process.svg"
+                      width={400}
+                      height={300}
+                      alt="Analysis Process Diagram"
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      Our analysis engine examines multiple aspects of your frontend:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      <li>Code Structure: Component organization and architecture</li>
+                      <li>Performance Metrics: Load times and resource usage</li>
+                      <li>Accessibility: WCAG compliance and user experience</li>
+                      <li>Best Practices: Modern frontend development standards</li>
+                      <li>Dependencies: Package optimization and updates</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-background p-8">
+                <h3 className="text-2xl font-bold mb-4">Tracking & Analytics</h3>
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      Comprehensive tracking system for measuring improvements:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      <li>User Engagement: Click-through rates and interaction patterns</li>
+                      <li>Performance Metrics: Load times and resource utilization</li>
+                      <li>A/B Testing: Variant performance comparison</li>
+                      <li>Error Tracking: Real-time monitoring of issues</li>
+                      <li>Conversion Analytics: Impact on business metrics</li>
+                    </ul>
+                  </div>
+                  <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
+                    <Image
+                      src="/analytics-dashboard.svg"
+                      width={400}
+                      height={300}
+                      alt="Analytics Dashboard Preview"
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-background p-8">
+                <h3 className="text-2xl font-bold mb-4">Developer Insights</h3>
+                <div className="grid md:grid-cols-2 gap-6 items-center">
+                  <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
+                    <Image
+                      src="/developer-insights.svg"
+                      width={400}
+                      height={300}
+                      alt="Developer Insights Dashboard"
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-muted-foreground">
+                      Make data-driven decisions with our developer tools:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                      <li>Performance Reports: Detailed analysis of improvements</li>
+                      <li>Variant Comparison: Side-by-side metrics of different versions</li>
+                      <li>User Feedback: Direct insights from end-users</li>
+                      <li>Optimization Suggestions: AI-powered recommendations</li>
+                      <li>Integration APIs: Custom analytics and tracking</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
