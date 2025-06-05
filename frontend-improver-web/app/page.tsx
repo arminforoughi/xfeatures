@@ -87,7 +87,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur">
+      <header className="w-full border-b bg-background">
         <div className="container mx-auto flex h-28 items-center justify-between px-4">
           <div className="flex items-center space-x-6">
             <Image
