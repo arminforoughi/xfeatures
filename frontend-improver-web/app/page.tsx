@@ -310,14 +310,14 @@ export default function Home() {
                   </div>
                   <div className="space-y-4">
                     <p className="text-muted-foreground">
-                      Our system employs an intelligent agent that follows a sophisticated workflow:
+                      Our AI agent works like your personal frontend expert, following a proven process:
                     </p>
                     <ul className="list-disc list-inside space-y-2 text-gray-700 rounded-xl p-6">
-                      <li>Code Analysis: Deep semantic understanding of your frontend codebase</li>
-                      <li>Pattern Recognition: Identification of improvement opportunities</li>
-                      <li>Optimization Generation: Creation of optimized code variants</li>
-                      <li>Performance Testing: Validation of improvements</li>
-                      <li>Deployment: Seamless integration of changes</li>
+                      <li>Smart Analysis: Understands your code like a senior developer would</li>
+                      <li>Pattern Detection: Identifies opportunities for improvement and optimization</li>
+                      <li>Safe Improvements: Makes targeted enhancements while preserving functionality</li>
+                      <li>Quality Checks: Validates changes to ensure everything works perfectly</li>
+                      <li>Seamless Integration: Deploys improvements without disrupting your workflow</li>
                     </ul>
                   </div>
                 </div>
