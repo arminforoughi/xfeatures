@@ -1,5 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface Session {
@@ -27,6 +28,10 @@ export const authOptions: NextAuthOptions = {
         },
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID || '',
+      clientSecret: process.env.GOOGLE_SECRET || '',
+    }),
   ],
   callbacks: {
     async jwt({ token, account }) {
@@ -43,7 +48,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: '/',
+    signIn: '/signup',
   },
   secret: process.env.NEXTAUTH_SECRET,
 }; 

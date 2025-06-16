@@ -122,13 +122,12 @@ export default function Home() {
                     size="lg"
                     onClick={() => {
                       if (session) {
-                        setShowRepoForm(true);
+                        router.push('/select-repo');
                       } else {
-                        signIn('github');
+                        router.push('/signup');
                       }
                     }}
                   >
-                    <Github className="h-7 w-7 mr-3" />
                     Get Started
                   </Button>
                   <Button
@@ -570,10 +569,9 @@ export default function Home() {
                 <Button
                   className="bg-black hover:bg-gray-800 text-white px-6 py-2 inline-flex items-center"
                   size="lg"
-                  onClick={() => signIn('github')}
+                  onClick={() => router.push('/signup')}
                 >
-                  <Github className="h-5 w-5 mr-2" />
-                  Sign in with GitHub
+                  Get Started
                 </Button>
               ) : (
                 <Button

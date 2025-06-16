@@ -23,7 +23,14 @@ function ImprovePageContent() {
       return;
     }
 
-    const eventSource = new EventSource(`/api/improve?repo=${repo}&token=${token}`);
+    // Get questionnaire data from localStorage
+    const questionnaireData = localStorage.getItem('questionnaire_complete');
+    if (!questionnaireData) {
+      router.push(`/questionnaire/goals?repo=${repo}&token=${token}`);
+      return;
+    }
+
+    const eventSource = new EventSource(`/api/improve?repo=${repo}&token=${token}&questionnaire=${encodeURIComponent(questionnaireData)}`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -70,7 +77,7 @@ function ImprovePageContent() {
             />
             <div className="flex flex-col">
               <span className="text-3xl font-bold tracking-tight text-primary">Improvement Process</span>
-              <span className="text-base text-muted-foreground mt-1">Enhancing your frontend code</span>
+              <span className="text-base text-muted-foreground mt-1">Enhancing your frontend with AI</span>
             </div>
           </div>
         </div>
@@ -131,11 +138,7 @@ function ImprovePageContent() {
 
 export default function ImprovePage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    }>
+    <Suspense fallback={<div>Loading...</div>}>
       <ImprovePageContent />
     </Suspense>
   );

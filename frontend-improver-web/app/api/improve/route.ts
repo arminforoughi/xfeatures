@@ -22,10 +22,18 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const repo = searchParams.get('repo');
   const token = searchParams.get('token');
+  const questionnaireData = searchParams.get('questionnaire');
 
   if (!repo || !token) {
     return new Response(
       JSON.stringify({ error: 'Repository and access token are required' }),
+      { status: 400 }
+    );
+  }
+
+  if (!questionnaireData) {
+    return new Response(
+      JSON.stringify({ error: 'Questionnaire data is required' }),
       { status: 400 }
     );
   }
@@ -122,7 +130,7 @@ export async function GET(request: Request) {
 
       // Use AI to analyze and improve the landing page
       sendLog('Analyzing and improving with AI...');
-      const improvedContent = await improveWithAI(content, landingPagePath, sendLog);
+      const improvedContent = await improveWithAI(content, landingPagePath, sendLog, JSON.parse(decodeURIComponent(questionnaireData)));
       
       // Write the improved content back to the file
       sendLog('Writing improved content...');
@@ -325,118 +333,91 @@ async function hasLandingPageIndicators(filePath: string, indicators: string[]):
   }
 }
 
-async function improveWithAI(content: string, filePath: string, sendLog: (message: string) => void): Promise<string> {
+async function improveWithAI(
+  content: string, 
+  filePath: string, 
+  sendLog: (message: string) => void,
+  questionnaireData: {
+    goals: string;
+    importantPages: string;
+    targetMetrics: string;
+    callToActions: string;
+    userInteractions: string;
+    successCriteria: string;
+  }
+): Promise<string> {
   try {
-    const fileExt = path.extname(filePath).toLowerCase();
-    const isReact = fileExt === '.jsx' || fileExt === '.tsx';
-    const isHTML = fileExt === '.html';
+    // Prepare the prompt with questionnaire data
+    const prompt = `
+      I need to improve a frontend page based on the following requirements:
 
-    // Step 1: Initial Analysis
-    sendLog('Starting initial code analysis...');
-    const analysisPrompt = `
-      Analyze this ${isReact ? 'React' : 'HTML'} code and provide a detailed breakdown of:
-      1. Current structure and components
-      2. Performance bottlenecks
-      3. Accessibility issues
-      4. SEO opportunities
-      5. User experience improvements
-      
-      Code to analyze:
+      Project Goals:
+      ${questionnaireData.goals}
+
+      Important Pages:
+      ${questionnaireData.importantPages}
+
+      Target Metrics:
+      ${questionnaireData.targetMetrics}
+
+      Call-to-Action Buttons:
+      ${questionnaireData.callToActions}
+
+      User Interactions:
+      ${questionnaireData.userInteractions}
+
+      Success Criteria:
+      ${questionnaireData.successCriteria}
+
+      Current page content:
       ${content}
+
+      Please improve this page to:
+      1. Optimize for the specified goals and metrics
+      2. Enhance the call-to-action buttons
+      3. Improve user interactions
+      4. Add analytics tracking for the specified metrics
+      5. Ensure the page meets the success criteria
+
+      Return the improved code with detailed explanations of the changes made.
     `;
 
-    const analysisResponse = await openai.chat.completions.create({
+    sendLog('Sending content to AI for analysis...');
+    const completion = await openai.chat.completions.create({
       model: "gpt-4-turbo-preview",
-      messages: [{ role: "user", content: analysisPrompt }],
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert frontend developer specializing in UI/UX optimization and A/B testing. Your task is to improve frontend code based on specific goals and requirements."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
       temperature: 0.7,
+      max_tokens: 4000
     });
 
-    const analysis = analysisResponse.choices[0].message.content || '';
-    sendLog('Initial analysis complete. Identifying improvement areas...');
-
-    // Step 2: Generate Improvements
-    sendLog('Generating specific improvements...');
-    const improvementsPrompt = `
-      Based on this analysis:
-      ${analysis}
-      
-      Provide specific code improvements for:
-      1. Performance optimization
-      2. Accessibility enhancements
-      3. SEO improvements
-      4. User experience upgrades
-      5. Modern best practices
-      
-      Original code:
-      ${content}
-    `;
-
-    const improvementsResponse = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: [{ role: "user", content: improvementsPrompt }],
-      temperature: 0.7,
-    });
-
-    const improvements = improvementsResponse.choices[0].message.content || '';
-    sendLog('Improvement suggestions generated. Implementing changes...');
-
-    // Step 3: Apply Improvements
-    sendLog('Applying improvements to the code...');
-    const applyPrompt = `
-      Apply these improvements to the code:
-      ${improvements}
-      
-      Original code:
-      ${content}
-      
-      Provide the complete improved code with all enhancements implemented.
-    `;
-
-    const applyResponse = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: [{ role: "user", content: applyPrompt }],
-      temperature: 0.7,
-    });
-
-    let improvedContent = applyResponse.choices[0].message.content || '';
-    sendLog('Base improvements applied. Adding analytics and tracking...');
-
-    // Step 4: Add Analytics
-    if (isHTML) {
-      sendLog('Adding analytics script to HTML...');
-      improvedContent = addAnalyticsScript(improvedContent);
-    } else if (isReact) {
-      sendLog('Adding analytics component to React...');
-      improvedContent = addAnalyticsComponent(improvedContent);
+    const improvedContent = completion.choices[0].message.content;
+    if (!improvedContent) {
+      throw new Error('No improvement suggestions received from AI');
     }
 
-    // Step 5: Final Review
-    sendLog('Performing final code review...');
-    const reviewPrompt = `
-      Review this improved code for any issues or potential problems:
-      ${improvedContent}
-      
-      Check for:
-      1. Syntax errors
-      2. Performance issues
-      3. Accessibility compliance
-      4. SEO best practices
-      5. User experience
-    `;
+    sendLog('AI analysis complete. Applying improvements...');
 
-    const reviewResponse = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: [{ role: "user", content: reviewPrompt }],
-      temperature: 0.7,
-    });
+    // Add analytics tracking
+    let finalContent = improvedContent;
+    if (filePath.endsWith('.html')) {
+      finalContent = addAnalyticsScript(finalContent);
+    } else if (filePath.endsWith('.jsx') || filePath.endsWith('.tsx')) {
+      finalContent = addAnalyticsComponent(finalContent);
+    }
 
-    const review = reviewResponse.choices[0].message.content || '';
-    sendLog('Final review complete. All improvements have been implemented successfully!');
-
-    return improvedContent;
+    return finalContent;
   } catch (error) {
-    console.error('Error in improveWithAI:', error);
-    throw new Error('Failed to improve code with AI');
+    console.error('Error in AI improvement:', error);
+    throw error;
   }
 }
 

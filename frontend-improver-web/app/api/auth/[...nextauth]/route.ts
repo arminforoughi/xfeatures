@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
   providers: [
@@ -11,6 +12,10 @@ const handler = NextAuth({
           scope: "repo read:user user:email",
         },
       },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID!,
+      clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
   callbacks: {
@@ -24,6 +29,9 @@ const handler = NextAuth({
       session.accessToken = token.accessToken;
       return session;
     },
+  },
+  pages: {
+    signIn: '/signup',
   },
 });
 
