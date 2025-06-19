@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export default function ActionsQuestionnaire() {
+function ActionsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const repo = searchParams.get('repo');
@@ -193,5 +193,13 @@ export default function ActionsQuestionnaire() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function ActionsQuestionnaire() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ActionsForm />
+    </Suspense>
   );
 } 

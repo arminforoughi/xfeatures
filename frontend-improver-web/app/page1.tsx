@@ -574,7 +574,9 @@ export default function Home() {
                               beginAtZero: true,
                               grid: {
                                 color: 'rgba(0, 0, 0, 0.05)',
-                                drawBorder: false,
+                              },
+                              border: {
+                                display: false
                               },
                               ticks: {
                                 font: {
@@ -584,9 +586,6 @@ export default function Home() {
                                 padding: 10,
                                 color: '#6b7280'
                               },
-                              border: {
-                                display: false
-                              }
                             },
                             x: {
                               grid: {

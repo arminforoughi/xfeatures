@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useRef } from 'react';
 
 interface MagnetImageProps {
@@ -48,17 +47,17 @@ export default function MagnetImage({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <Image
+      <img
         src={src}
         alt={alt}
         width={width}
         height={height}
-        priority={priority}
+        loading={priority ? 'eager' : 'lazy'}
         className={`
           duration-700 ease-in-out
           ${isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0'}
         `}
-        onLoadingComplete={() => setIsLoading(false)}
+        onLoad={() => setIsLoading(false)}
       />
     </div>
   );

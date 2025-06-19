@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="1200" fill="#f8fafc" rx="24" ry="24"/>
+  
+  <!-- Main Process Flow -->
+  <g transform="translate(150, 150)">
+    <!-- GitHub Integration -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="400" height="200" fill="#e2e8f0" rx="16" ry="16"/>
+      <text x="200" y="60" text-anchor="middle" fill="#1e293b" font-size="32" font-weight="bold">GitHub Integration</text>
+      <text x="200" y="120" text-anchor="middle" fill="#1e293b" font-size="20">Connect your repository</text>
+      <text x="200" y="160" text-anchor="middle" fill="#1e293b" font-size="20">for automatic analysis</text>
+    </g>
+    
+    <!-- Arrow -->
+    <path d="M200 210 L200 270" stroke="#94a3b8" stroke-width="6" marker-end="url(#arrow)"/>
+    
+    <!-- AI Analysis -->
+    <g transform="translate(0, 290)">
+      <rect x="0" y="0" width="400" height="200" fill="#e2e8f0" rx="16" ry="16"/>
+      <text x="200" y="60" text-anchor="middle" fill="#1e293b" font-size="32" font-weight="bold">AI Analysis</text>
+      <text x="200" y="120" text-anchor="middle" fill="#1e293b" font-size="20">Deep code analysis</text>
+      <text x="200" y="160" text-anchor="middle" fill="#1e293b" font-size="20">and optimization</text>
+    </g>
+    
+    <!-- Arrow -->
+    <path d="M200 500 L200 560" stroke="#94a3b8" stroke-width="6" marker-end="url(#arrow)"/>
+    
+    <!-- Automated Improvements -->
+    <g transform="translate(0, 580)">
+      <rect x="0" y="0" width="400" height="200" fill="#e2e8f0" rx="16" ry="16"/>
+      <text x="200" y="60" text-anchor="middle" fill="#1e293b" font-size="32" font-weight="bold">Automated Improvements</text>
+      <text x="200" y="120" text-anchor="middle" fill="#1e293b" font-size="20">Code enhancements</text>
+      <text x="200" y="160" text-anchor="middle" fill="#1e293b" font-size="20">and optimizations</text>
+    </g>
+    
+    <!-- Arrow -->
+    <path d="M200 790 L200 850" stroke="#94a3b8" stroke-width="6" marker-end="url(#arrow)"/>
+    
+    <!-- Performance Tracking -->
+    <g transform="translate(0, 870)">
+      <rect x="0" y="0" width="400" height="200" fill="#e2e8f0" rx="16" ry="16"/>
+      <text x="200" y="60" text-anchor="middle" fill="#1e293b" font-size="32" font-weight="bold">Performance Tracking</text>
+      <text x="200" y="120" text-anchor="middle" fill="#1e293b" font-size="20">Real-time metrics</text>
+      <text x="200" y="160" text-anchor="middle" fill="#1e293b" font-size="20">and analytics</text>
+    </g>
+    
+    <!-- Side Process Indicators -->
+    <g transform="translate(550, 0)">
+      <!-- Code Quality -->
+      <circle cx="0" cy="100" r="70" fill="#3b82f6" opacity="0.1"/>
+      <text x="0" y="105" text-anchor="middle" fill="#1e293b" font-size="24">Code Quality</text>
+      
+      <!-- Performance -->
+      <circle cx="0" cy="320" r="70" fill="#10b981" opacity="0.1"/>
+      <text x="0" y="325" text-anchor="middle" fill="#1e293b" font-size="24">Performance</text>
+      
+      <!-- Accessibility -->
+      <circle cx="0" cy="540" r="70" fill="#f59e0b" opacity="0.1"/>
+      <text x="0" y="545" text-anchor="middle" fill="#1e293b" font-size="24">Accessibility</text>
+      
+      <!-- User Experience -->
+      <circle cx="0" cy="760" r="70" fill="#8b5cf6" opacity="0.1"/>
+      <text x="0" y="765" text-anchor="middle" fill="#1e293b" font-size="24">User Experience</text>
+      
+      <!-- Analytics -->
+      <circle cx="0" cy="980" r="70" fill="#ef4444" opacity="0.1"/>
+      <text x="0" y="985" text-anchor="middle" fill="#1e293b" font-size="24">Analytics</text>
+    </g>
+    
+    <!-- Connecting Lines -->
+    <g stroke="#94a3b8" stroke-width="3" opacity="0.5">
+      <line x1="400" y1="100" x2="550" y2="100"/>
+      <line x1="400" y1="390" x2="550" y2="320"/>
+      <line x1="400" y1="680" x2="550" y2="540"/>
+      <line x1="400" y1="780" x2="550" y2="760"/>
+      <line x1="400" y1="970" x2="550" y2="980"/>
+    </g>
+  </g>
+  
+  <!-- Arrow Marker -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5"
+        markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+</svg> 
