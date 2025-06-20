@@ -4,7 +4,9 @@ import React, { useState, useEffect, Suspense, useCallback, memo, FC } from 'rea
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import MagnetImage from "../../components/ui/MagnetImage";
+import { Card } from "@/components/ui/card";
+import SimpleImage from "@/components/ui/SimpleImage";
+import Link from "next/link";
 import Head from 'next/head';
 
 interface Branch {
@@ -230,7 +232,7 @@ const BranchesContent: FC = () => {
       </Head>
       <header className="w-full border-b bg-background">
         <div className="container mx-auto flex h-28 items-center justify-between px-4">
-          <MagnetImage
+          <SimpleImage
             src="/Adobe Express - file.png"
             alt="Logo"
             width={96}

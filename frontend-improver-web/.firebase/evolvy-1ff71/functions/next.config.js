@@ -1,13 +1,8 @@
-"use strict";
-
-// next.config.js
-var nextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-    domains: ["survivalofthefeature.com"],
-    unoptimized: true
+    unoptimized: true,
   },
-  experimental: {
-    serverActions: true
-  }
-};
-module.exports = nextConfig;
+}
+
+module.exports = nextConfig 

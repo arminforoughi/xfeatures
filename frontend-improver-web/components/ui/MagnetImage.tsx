@@ -20,6 +20,7 @@ export default function MagnetImage({
   priority = false,
 }: MagnetImageProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -39,6 +40,16 @@ export default function MagnetImage({
     container.style.transform = 'translate(0, 0) scale(1)';
   };
 
+  const handleImageLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+  };
+
+  const handleImageError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
+
   return (
     <div 
       ref={containerRef}
@@ -47,6 +58,18 @@ export default function MagnetImage({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg flex items-center justify-center">
+          <div className="text-gray-400 text-sm">Loading...</div>
+        </div>
+      )}
+      
+      {hasError && (
+        <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
+          <div className="text-gray-500 text-sm">Image failed to load</div>
+        </div>
+      )}
+      
       <img
         src={src}
         alt={alt}
@@ -54,10 +77,12 @@ export default function MagnetImage({
         height={height}
         loading={priority ? 'eager' : 'lazy'}
         className={`
-          duration-700 ease-in-out
-          ${isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0'}
+          transition-opacity duration-300 ease-in-out
+          ${isLoading ? 'opacity-0' : 'opacity-100'}
+          ${hasError ? 'hidden' : ''}
         `}
-        onLoad={() => setIsLoading(false)}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
       />
     </div>
   );

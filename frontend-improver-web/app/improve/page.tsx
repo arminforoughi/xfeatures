@@ -4,7 +4,9 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import MagnetImage from "../../components/ui/MagnetImage";
+import { Card } from "@/components/ui/card";
+import SimpleImage from "@/components/ui/SimpleImage";
+import Link from "next/link";
 
 function ImprovePageContent() {
   const { data: session } = useSession();
@@ -19,18 +21,12 @@ function ImprovePageContent() {
 
   useEffect(() => {
     if (!repo || !token) {
-      router.push('/');
+      router.push('/select-repo');
       return;
     }
 
-    // Get questionnaire data from localStorage
-    const questionnaireData = localStorage.getItem('questionnaire_complete');
-    if (!questionnaireData) {
-      router.push(`/questionnaire/goals?repo=${repo}&token=${token}`);
-      return;
-    }
-
-    const eventSource = new EventSource(`/api/improve?repo=${repo}&token=${token}&questionnaire=${encodeURIComponent(questionnaireData)}`);
+    // Start the improvement process directly without questionnaire
+    const eventSource = new EventSource(`/api/improve?repo=${repo}&token=${token}`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -67,7 +63,7 @@ function ImprovePageContent() {
       <header className="w-full border-b bg-background">
         <div className="container mx-auto flex h-28 items-center justify-between px-4">
           <div className="flex items-center space-x-6">
-            <MagnetImage
+            <SimpleImage
               src="/Adobe Express - file.png"
               alt="Logo"
               width={96}

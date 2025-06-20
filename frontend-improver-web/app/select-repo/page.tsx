@@ -20,6 +20,7 @@ export default function SelectRepo() {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState<Repo | null>(null);
 
   useEffect(() => {
     if (!session) {
@@ -51,8 +52,12 @@ export default function SelectRepo() {
   );
 
   const handleRepoSelect = (repo: Repo) => {
-    router.push(`/questionnaire/goals?repo=${repo.full_name}&token=${session?.accessToken}`);
+    setSelectedRepo(repo);
   };
+
+  if (selectedRepo) {
+    router.push(`/improve?repo=${selectedRepo.full_name}&token=${session?.accessToken}`);
+  }
 
   if (!session) {
     return null;

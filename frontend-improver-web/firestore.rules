@@ -1,0 +1,13 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read, write, and create documents in the
+    // 'questionnaires' collection.
+    // WARNING: This is insecure for production. You should add
+    // authentication rules before going live.
+    match /questionnaires/{questionnaireId} {
+      allow read, write, create: if true;
+    }
+  }
+} 

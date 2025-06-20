@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Github } from "lucide-react";
 import Link from "next/link";
 import {
@@ -18,7 +19,8 @@ import {
   Filler,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import MagnetImage from "../components/ui/MagnetImage";
+import SimpleImage from "@/components/ui/SimpleImage";
+import ReliableImage from "@/components/ui/ReliableImage";
 
 ChartJS.register(
   CategoryScale,
@@ -80,7 +82,7 @@ export default function Home() {
       <header className="w-full border-b bg-background">
         <div className="container mx-auto flex h-28 items-center justify-between px-4">
           <div className="flex items-center space-x-6">
-            <MagnetImage
+            <SimpleImage
               src="/Adobe Express - file.png"
               alt="Logo"
               width={96}
@@ -116,32 +118,21 @@ export default function Home() {
                     AI analyzes and improves your landing page—so you can focus on building and launching safely.
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <Button
-                    className="bg-black hover:bg-gray-800 text-white px-10 py-4 text-xl font-bold shadow-xl transition-transform hover:scale-105"
                     size="lg"
-                    onClick={() => {
-                      if (session) {
-                        router.push('/select-repo');
-                      } else {
-                        router.push('/signup');
-                      }
-                    }}
+                    className="bg-black hover:bg-gray-800 text-white px-8 py-3 text-lg"
+                    onClick={() => window.open('https://form.typeform.com/to/qYbBE8nK', '_blank')}
                   >
-                    Get Started
+                    Sign Up for Beta
                   </Button>
                   <Button
                     variant="outline"
-                    className="text-lg px-8 py-4 border-2 border-primary font-semibold transition-colors hover:bg-primary/10"
                     size="lg"
-                    onClick={() => {
-                      window.scrollTo({
-                        top: document.body.scrollHeight / 3,
-                        behavior: 'smooth',
-                      });
-                    }}
+                    className="border-2 border-primary text-primary hover:bg-primary/10 px-8 py-3 text-lg"
+                    onClick={() => window.open('https://calendly.com/laurie-sartain/30min', '_blank')}
                   >
-                    Learn More
+                    Book a Call
                   </Button>
                 </div>
                 {showRepoForm && session && (
@@ -187,7 +178,7 @@ export default function Home() {
                 )}
               </div>
               <div className="flex items-center justify-center">
-                <MagnetImage
+                <SimpleImage
                   src="/logoss.png"
                   width={900}
                   height={900}
@@ -299,7 +290,7 @@ export default function Home() {
                 <h3 className="text-2xl font-bold mb-4">Agentic Flow</h3>
                 <div className="grid md:grid-cols-2 gap-6 items-center">
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <MagnetImage
+                    <SimpleImage
                       src="/agenticf.png"
                       width={400}
                       height={300}
@@ -338,7 +329,7 @@ export default function Home() {
                     </ul>
                   </div>
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <MagnetImage
+                    <SimpleImage
                       src="/WhatsApp Image 2025-06-04 at 21.19.43.jpeg"
                       width={400}
                       height={300}
@@ -353,7 +344,7 @@ export default function Home() {
                 <h3 className="text-2xl font-bold mb-4"></h3>
                 <div className="grid md:grid-cols-2 gap-6 items-center">
                   <div className="relative h-[300px] bg-muted rounded-lg flex items-center justify-center">
-                    <MagnetImage
+                    <SimpleImage
                       src="/WhatsApp Image 2025-06-04 at 22.31.33.jpeg"
                       width={400}
                       height={300}

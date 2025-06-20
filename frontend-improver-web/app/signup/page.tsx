@@ -3,15 +3,16 @@
 import { signIn } from 'next-auth/react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import SimpleImage from "@/components/ui/SimpleImage";
+import Link from "next/link";
 import { Github } from "lucide-react";
-import MagnetImage from "@/components/ui/MagnetImage";
 
 export default function SignUp() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
-          <MagnetImage
+          <SimpleImage
             src="/Adobe Express - file.png"
             alt="Logo"
             width={96}
